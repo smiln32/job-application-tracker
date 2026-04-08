@@ -418,6 +418,93 @@ statusFilter.addEventListener("change", render);
 priorityFilter.addEventListener("change", render);
 sortBy.addEventListener("change", render);
 
+function saveJob(job) {
+  const records = loadRecords();
+
+  const newRecord = {
+    id: createId(),
+    company: job.employer_name,
+    role: job.job_title,
+    status: "Saved",
+    priority: "Medium",
+    source: "JSearch",
+    jobUrl: job.job_apply_link,
+    nextAction: "Review and apply",
+    notes: "",
+    updatedAt: new Date().toISOString()
+  };
+
+  records.push(newRecord);
+  saveRecords(records);
+  render();
+
+  alert("Saved to tracker");
+}
+const searchJobsBtn = document.getElementById("searchJobsBtn");
+
+if (searchJobsBtn) {
+  searchJobsBtn.addEventListener("click", async () => {
+    const query = document.getElementById("jobQuery").value;
+    const location = document.getElementById("jobLocation").value;
+    const resultsContainer = document.getElementById("jobResults");
+
+    resultsContainer.innerHTML = "Searching...";
+
+    const url = `https://jsearch.p.rapidapi.com/search?query=${query}%20in%20${location}&num_pages=1`;
+
+    const options = {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "380eeec1a1mshf38988dacc01ec8p173921jsna92649f29f",
+        "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
+      }
+    };
+
+    try {
+      const response = await fetch(url, options);
+      const data = await response.json();
+
+      const jobs = data.data || [];
+
+      resultsContainer.innerHTML = jobs.map(job => `
+        <div class="card">
+          <h3>${job.job_title}</h3>
+          <div>${job.employer_name}</div>
+          <div>${job.job_city || ""} ${job.job_country || ""}</div>
+          <a href="${job.job_apply_link}" target="_blank">View Job</a>
+          <button onclick='saveJob(${JSON.stringify(job)})'>Save</button>
+        </div>
+      `).join("");
+
+    } catch (err) {
+      resultsContainer.innerHTML = "Error loading jobs.";
+    }
+  });
+}
+
+function saveJob(job) {
+  const records = loadRecords();
+
+  const newRecord = {
+    id: createId(),
+    company: job.employer_name,
+    role: job.job_title,
+    status: "Saved",
+    priority: "Medium",
+    source: "JSearch",
+    jobUrl: job.job_apply_link,
+    nextAction: "Review and apply",
+    notes: "",
+    updatedAt: new Date().toISOString()
+  };
+
+  records.push(newRecord);
+  saveRecords(records);
+  render();
+
+  alert("Saved to tracker");
+}
+
 populateStatuses();
 clearForm();
 render();
