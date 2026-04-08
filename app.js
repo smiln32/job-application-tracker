@@ -70,9 +70,6 @@ const lastContactDate = document.getElementById("lastContactDate");
 const nextAction = document.getElementById("nextAction");
 const notes = document.getElementById("notes");
 
-const exportBtn = document.getElementById("exportBtn");
-const importInput = document.getElementById("importInput");
-
 function populateStatuses() {
   statusFilter.innerHTML = STATUS_OPTIONS.map(item => `<option value="${item}">${item === "All" ? "All statuses" : item}</option>`).join("");
   statusField.innerHTML = STATUS_OPTIONS.filter(item => item !== "All").map(item => `<option value="${item}">${item}</option>`).join("");
@@ -399,39 +396,6 @@ searchInput.addEventListener("input", render);
 statusFilter.addEventListener("change", render);
 priorityFilter.addEventListener("change", render);
 sortBy.addEventListener("change", render);
-
-exportBtn.addEventListener("click", () => {
-  const records = loadRecords();
-  const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "job-tracker-pro-export.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-});
-
-importInput.addEventListener("change", event => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const parsed = JSON.parse(e.target.result);
-      if (!Array.isArray(parsed)) throw new Error("Invalid");
-      saveRecords(parsed);
-      render();
-      alert("Import complete.");
-    } catch {
-      alert("That file could not be imported.");
-    }
-  };
-  reader.readAsText(file);
-  importInput.value = "";
-});
 
 populateStatuses();
 clearForm();
