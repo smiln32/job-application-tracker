@@ -70,9 +70,17 @@ const lastContactDate = document.getElementById("lastContactDate");
 const nextAction = document.getElementById("nextAction");
 const notes = document.getElementById("notes");
 
+const searchJobsBtn = document.getElementById("searchJobsBtn");
+
 function populateStatuses() {
-  statusFilter.innerHTML = STATUS_OPTIONS.map(item => `<option value="${item}">${item === "All" ? "All statuses" : item}</option>`).join("");
-  statusField.innerHTML = STATUS_OPTIONS.filter(item => item !== "All").map(item => `<option value="${item}">${item}</option>`).join("");
+  statusFilter.innerHTML = STATUS_OPTIONS.map(item =>
+    `<option value="${item}">${item === "All" ? "All statuses" : item}</option>`
+  ).join("");
+
+  statusField.innerHTML = STATUS_OPTIONS
+    .filter(item => item !== "All")
+    .map(item => `<option value="${item}">${item}</option>`)
+    .join("");
 }
 
 function loadRecords() {
@@ -107,7 +115,9 @@ function dueState(dateString) {
 
 function responseRate(records) {
   if (!records.length) return 0;
-  const responded = records.filter(r => INTERVIEW_STATUSES.has(r.status) || r.status === "Offer").length;
+  const responded = records.filter(
+    r => INTERVIEW_STATUSES.has(r.status) || r.status === "Offer"
+  ).length;
   return Math.round((responded / records.length) * 100);
 }
 
@@ -120,9 +130,9 @@ function offerRate(records) {
 function pipelineCounts(records) {
   return STATUS_OPTIONS
     .filter(item => item !== "All")
-    .map(status => ({
-      status,
-      count: records.filter(r => r.status === status).length
+    .map(statusValue => ({
+      status: statusValue,
+      count: records.filter(r => r.status === statusValue).length
     }));
 }
 
@@ -141,6 +151,7 @@ function getPriorityWeight(value) {
 
 function sortRecords(records) {
   const mode = sortBy.value;
+
   return [...records].sort((a, b) => {
     if (mode === "company") return (a.company || "").localeCompare(b.company || "");
     if (mode === "applied") return (b.appliedDate || "").localeCompare(a.appliedDate || "");
@@ -149,6 +160,7 @@ function sortRecords(records) {
     const dueA = dueState(a.nextActionDate);
     const dueB = dueState(b.nextActionDate);
     const rank = { urgent: 3, today: 2, ok: 1, none: 0 };
+
     const diffDue = rank[dueB] - rank[dueA];
     if (diffDue !== 0) return diffDue;
 
@@ -188,7 +200,9 @@ function renderMetrics(records) {
   metricTotal.textContent = records.length;
   metricActive.textContent = records.filter(r => ACTIVE_STATUSES.has(r.status)).length;
   metricInterview.textContent = records.filter(r => INTERVIEW_STATUSES.has(r.status)).length;
-  metricDue.textContent = records.filter(r => !CLOSED_STATUSES.has(r.status) && ["urgent", "today"].includes(dueState(r.nextActionDate))).length;
+  metricDue.textContent = records.filter(
+    r => !CLOSED_STATUSES.has(r.status) && ["urgent", "today"].includes(dueState(r.nextActionDate))
+  ).length;
   metricResponseRate.textContent = responseRate(records) + "%";
   metricOfferRate.textContent = offerRate(records) + "%";
 }
@@ -240,7 +254,7 @@ function closeModal() {
 }
 
 function formatMaybeLink(url) {
-  if (!url) return "—";
+  if (!url) return "";
   const safe = escapeHtml(url);
   return `<a class="link" href="${safe}" target="_blank" rel="noopener noreferrer">Open posting</a>`;
 }
@@ -261,7 +275,11 @@ function renderCards(records) {
 
   cardsContainer.innerHTML = filtered.map(record => {
     const due = dueState(record.nextActionDate);
-    const dueText = due === "urgent" ? "Overdue" : due === "today" ? "Due today" : record.nextActionDate || "—";
+    const dueText =
+      due === "urgent" ? "Overdue" :
+      due === "today" ? "Due today" :
+      record.nextActionDate || "—";
+
     const notesPreview = record.notes
       ? escapeHtml(record.notes.length > 220 ? record.notes.slice(0, 220) + "..." : record.notes)
       : "No notes yet.";
@@ -324,17 +342,17 @@ function renderCards(records) {
 
   cardsContainer.querySelectorAll("[data-edit]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const records = loadRecords();
-      const record = records.find(r => r.id === btn.dataset.edit);
+      const currentRecords = loadRecords();
+      const record = currentRecords.find(r => r.id === btn.dataset.edit);
       if (record) openModal(record);
     });
   });
 
   cardsContainer.querySelectorAll("[data-delete]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const records = loadRecords();
-      const updated = records.filter(r => r.id !== btn.dataset.delete);
-      if (updated.length !== records.length && window.confirm("Delete this application?")) {
+      const currentRecords = loadRecords();
+      const updated = currentRecords.filter(r => r.id !== btn.dataset.delete);
+      if (updated.length !== currentRecords.length && window.confirm("Delete this application?")) {
         saveRecords(updated);
         render();
       }
@@ -384,27 +402,6 @@ applicationForm.addEventListener("submit", event => {
   render();
 });
 
- try {
-    const response = await fetch(url, options);
-    const data = await response.json();
-
-    const jobs = data.data || [];
-
-    resultsContainer.innerHTML = jobs.map(job => `
-      <div class="card">
-        <h3>${job.job_title}</h3>
-        <div>${job.employer_name}</div>
-        <div>${job.job_city || ""} ${job.job_country || ""}</div>
-        <a href="${job.job_apply_link}" target="_blank">View Job</a>
-        <button onclick='saveJob(${JSON.stringify(job)})'>Save</button>
-      </div>
-    `).join("");
-
-  } catch (err) {
-    resultsContainer.innerHTML = "Error loading jobs.";
-  }
-});
-
 openModalBtn.addEventListener("click", () => openModal());
 closeModalBtn.addEventListener("click", closeModal);
 cancelBtn.addEventListener("click", closeModal);
@@ -418,44 +415,25 @@ statusFilter.addEventListener("change", render);
 priorityFilter.addEventListener("change", render);
 sortBy.addEventListener("change", render);
 
-function saveJob(job) {
-  const records = loadRecords();
-
-  const newRecord = {
-    id: createId(),
-    company: job.employer_name,
-    role: job.job_title,
-    status: "Saved",
-    priority: "Medium",
-    source: "JSearch",
-    jobUrl: job.job_apply_link,
-    nextAction: "Review and apply",
-    notes: "",
-    updatedAt: new Date().toISOString()
-  };
-
-  records.push(newRecord);
-  saveRecords(records);
-  render();
-
-  alert("Saved to tracker");
-}
-const searchJobsBtn = document.getElementById("searchJobsBtn");
-
 if (searchJobsBtn) {
   searchJobsBtn.addEventListener("click", async () => {
-    const query = document.getElementById("jobQuery").value;
-    const location = document.getElementById("jobLocation").value;
+    const query = document.getElementById("jobQuery").value.trim();
+    const location = document.getElementById("jobLocation").value.trim();
     const resultsContainer = document.getElementById("jobResults");
 
-    resultsContainer.innerHTML = "Searching...";
+    if (!query) {
+      resultsContainer.innerHTML = "<div class='panel empty-state'><p>Enter a job title first.</p></div>";
+      return;
+    }
 
-    const url = `https://jsearch.p.rapidapi.com/search?query=${query}%20in%20${location}&num_pages=1`;
+    resultsContainer.innerHTML = "<div class='panel empty-state'><p>Searching...</p></div>";
+
+    const url = `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(query + (location ? " in " + location : ""))}&num_pages=1`;
 
     const options = {
       method: "GET",
       headers: {
-        "X-RapidAPI-Key": "380eeec1a1mshf38988dacc01ec8p173921jsna92649f29f",
+        "X-RapidAPI-Key": "PASTE_YOUR_NEW_KEY_HERE",
         "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
       }
     };
@@ -463,36 +441,69 @@ if (searchJobsBtn) {
     try {
       const response = await fetch(url, options);
       const data = await response.json();
-
       const jobs = data.data || [];
 
-      resultsContainer.innerHTML = jobs.map(job => `
-        <div class="card">
-          <h3>${job.job_title}</h3>
-          <div>${job.employer_name}</div>
-          <div>${job.job_city || ""} ${job.job_country || ""}</div>
-          <a href="${job.job_apply_link}" target="_blank">View Job</a>
-          <button onclick='saveJob(${JSON.stringify(job)})'>Save</button>
-        </div>
+      if (!jobs.length) {
+        resultsContainer.innerHTML = "<div class='panel empty-state'><p>No jobs found.</p></div>";
+        return;
+      }
+
+      resultsContainer.innerHTML = jobs.map((job, index) => `
+        <article class="card ok">
+          <div class="card-top">
+            <div>
+              <h3 class="role-title">${escapeHtml(job.job_title || "Untitled role")}</h3>
+              <div class="company-name">${escapeHtml(job.employer_name || "Unknown company")}</div>
+            </div>
+          </div>
+
+          <div class="card-grid">
+            <div class="meta-block">
+              <small>Location</small>
+              <div>${escapeHtml([job.job_city, job.job_state, job.job_country].filter(Boolean).join(", ") || "—")}</div>
+            </div>
+            <div class="meta-block">
+              <small>Employment type</small>
+              <div>${escapeHtml(job.job_employment_type || "—")}</div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <a class="link" href="${escapeHtml(job.job_apply_link || "#")}" target="_blank" rel="noopener noreferrer">View Job</a>
+            <button class="btn btn-secondary" type="button" onclick="saveJobFromSearch(${index})">Save</button>
+          </div>
+        </article>
       `).join("");
 
+      window.lastJobSearchResults = jobs;
     } catch (err) {
-      resultsContainer.innerHTML = "Error loading jobs.";
+      resultsContainer.innerHTML = "<div class='panel empty-state'><p>Error loading jobs.</p></div>";
+      console.error(err);
     }
   });
 }
 
-function saveJob(job) {
+window.lastJobSearchResults = [];
+
+function saveJobFromSearch(index) {
+  const job = window.lastJobSearchResults[index];
+  if (!job) return;
+
   const records = loadRecords();
 
   const newRecord = {
     id: createId(),
-    company: job.employer_name,
-    role: job.job_title,
+    company: job.employer_name || "",
+    role: job.job_title || "",
     status: "Saved",
     priority: "Medium",
+    workType: "",
     source: "JSearch",
-    jobUrl: job.job_apply_link,
+    salary: "",
+    jobUrl: job.job_apply_link || "",
+    appliedDate: "",
+    nextActionDate: "",
+    lastContactDate: "",
     nextAction: "Review and apply",
     notes: "",
     updatedAt: new Date().toISOString()
@@ -501,7 +512,6 @@ function saveJob(job) {
   records.push(newRecord);
   saveRecords(records);
   render();
-
   alert("Saved to tracker");
 }
 
