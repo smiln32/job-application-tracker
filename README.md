@@ -1,57 +1,36 @@
-# Job Application Tracker
+# Job Tracker Pro
 
-A lightweight local web app for tracking job applications, interviews, follow-ups, contacts, and notes.
+A more polished local web app for tracking job applications and interviews.
 
-## Features
+## What changed in this version
 
-- Add, edit, and delete job applications
-- Track company, role, location, salary, source, and status
-- Track interview stages and upcoming interview dates
-- Store recruiter / contact details
-- Add follow-up dates, links, and notes
-- Filter by status and search by company / role
-- Dashboard counts for quick review
-- Export data to JSON
-- Import data from JSON
-- Runs entirely in the browser using localStorage
+- professional top section with six metrics
+- smarter status structure
+- priority tracking
+- next action and next action date
+- last contact date
+- urgency-based sorting
+- improved visual hierarchy
+- square corners for a cleaner professional look
+- professional font stack using Inter
+- export and import support
 
-## How to use
+## Status pipeline
 
-1. Download or clone the repository.
-2. Open `index.html` in your browser.
-3. Start adding applications.
-
-No install step is required.
-
-## Suggested statuses
-
+- Saved
 - Applied
 - Recruiter Screen
-- Interviewing
+- Hiring Manager
+- Team Interview
+- Final Interview
 - Offer
 - Rejected
 - Withdrawn
 
-## Files
+## Open it
 
-- `index.html` — app layout
-- `styles.css` — styling
-- `app.js` — logic and local storage
-- `README.md` — setup and usage notes
+Open `index.html` in a browser.
 
 ## Notes
 
-This stores data locally in your browser. If you want cloud sync later, the next upgrade would be:
-
-- Supabase
-- Airtable
-- Firebase
-- Notion API
-
-## Customization ideas
-
-- Add tags for remote / hybrid / onsite
-- Add resume version tracking
-- Add cover letter version tracking
-- Add reminders for thank-you emails
-- Add analytics like response rate and interview rate
+This version stores data in your browser with localStorage.

@@ -3,162 +3,192 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Job Application Tracker</title>
+  <title>Job Tracker Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <header class="hero">
+  <div class="app-shell">
+    <header class="topbar">
       <div>
-        <h1>Job Application Tracker</h1>
-        <p>Track applications, interviews, follow-ups, contacts, and notes in one place.</p>
+        <div class="eyebrow">Professional application pipeline</div>
+        <h1>Job Tracker Pro</h1>
+        <p class="subtitle">Track applications, interviews, follow-ups, and next steps in one focused workspace.</p>
       </div>
-      <div class="hero-actions">
-        <button id="exportBtn" class="secondary">Export JSON</button>
-        <label for="importInput" class="secondary file-label">Import JSON</label>
+      <div class="topbar-actions">
+        <button id="exportBtn" class="btn btn-secondary">Export JSON</button>
+        <label for="importInput" class="btn btn-secondary">Import JSON</label>
         <input id="importInput" type="file" accept=".json" hidden />
+        <button id="openModalBtn" class="btn btn-primary">New Application</button>
       </div>
     </header>
 
-    <section class="stats">
-      <div class="stat-card">
-        <span class="stat-label">Total</span>
-        <strong id="totalCount">0</strong>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Interviewing</span>
-        <strong id="interviewingCount">0</strong>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Offers</span>
-        <strong id="offerCount">0</strong>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Follow-ups Due</span>
-        <strong id="followupCount">0</strong>
-      </div>
+    <section class="metrics-grid">
+      <article class="metric-card">
+        <span class="metric-label">Total applications</span>
+        <strong id="metricTotal">0</strong>
+        <span class="metric-note">All saved records</span>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Active pipeline</span>
+        <strong id="metricActive">0</strong>
+        <span class="metric-note">Open opportunities</span>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Interview stage</span>
+        <strong id="metricInterview">0</strong>
+        <span class="metric-note">In conversation now</span>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Follow-ups due</span>
+        <strong id="metricDue">0</strong>
+        <span class="metric-note">Needs action</span>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Response rate</span>
+        <strong id="metricResponseRate">0%</strong>
+        <span class="metric-note">Reached screen or beyond</span>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Offer rate</span>
+        <strong id="metricOfferRate">0%</strong>
+        <span class="metric-note">Offers per application</span>
+      </article>
     </section>
 
-    <section class="controls card">
-      <div class="control-group">
-        <label for="searchInput">Search</label>
-        <input id="searchInput" type="text" placeholder="Company or role" />
-      </div>
-      <div class="control-group">
-        <label for="statusFilter">Status</label>
-        <select id="statusFilter">
-          <option value="All">All</option>
-          <option>Applied</option>
-          <option>Recruiter Screen</option>
-          <option>Interviewing</option>
-          <option>Offer</option>
-          <option>Rejected</option>
-          <option>Withdrawn</option>
-        </select>
-      </div>
-      <div class="control-group grow">
-        <label>&nbsp;</label>
-        <button id="newBtn">Add Application</button>
-      </div>
-    </section>
-
-    <section class="content-grid">
-      <section class="card form-card">
-        <h2 id="formTitle">Add Application</h2>
-        <form id="applicationForm">
-          <input type="hidden" id="applicationId" />
-
-          <div class="form-grid">
-            <div>
-              <label for="company">Company</label>
-              <input id="company" required />
-            </div>
-            <div>
-              <label for="role">Role</label>
-              <input id="role" required />
-            </div>
-            <div>
-              <label for="location">Location</label>
-              <input id="location" />
-            </div>
-            <div>
-              <label for="workType">Work Type</label>
-              <select id="workType">
-                <option value="">Select</option>
-                <option>Remote</option>
-                <option>Hybrid</option>
-                <option>Onsite</option>
-              </select>
-            </div>
-            <div>
-              <label for="salary">Salary</label>
-              <input id="salary" placeholder="$85,000" />
-            </div>
-            <div>
-              <label for="source">Source</label>
-              <input id="source" placeholder="LinkedIn, referral, company site" />
-            </div>
-            <div>
-              <label for="status">Status</label>
-              <select id="status" required>
-                <option>Applied</option>
-                <option>Recruiter Screen</option>
-                <option>Interviewing</option>
-                <option>Offer</option>
-                <option>Rejected</option>
-                <option>Withdrawn</option>
-              </select>
-            </div>
-            <div>
-              <label for="appliedDate">Applied Date</label>
-              <input id="appliedDate" type="date" />
-            </div>
-            <div>
-              <label for="nextInterviewDate">Next Interview Date</label>
-              <input id="nextInterviewDate" type="date" />
-            </div>
-            <div>
-              <label for="stage">Interview Stage</label>
-              <input id="stage" placeholder="Phone screen, panel, final" />
-            </div>
-            <div>
-              <label for="followupDate">Follow-up Date</label>
-              <input id="followupDate" type="date" />
-            </div>
-            <div>
-              <label for="jobUrl">Job URL</label>
-              <input id="jobUrl" type="url" placeholder="https://..." />
-            </div>
-            <div>
-              <label for="contactName">Contact Name</label>
-              <input id="contactName" />
-            </div>
-            <div>
-              <label for="contactEmail">Contact Email</label>
-              <input id="contactEmail" type="email" />
-            </div>
-          </div>
-
-          <div>
-            <label for="notes">Notes</label>
-            <textarea id="notes" rows="7" placeholder="Conversation notes, prep points, thank-you sent, next steps..."></textarea>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit">Save</button>
-            <button type="button" id="resetBtn" class="secondary">Clear</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="card list-card">
-        <div class="list-header">
-          <h2>Applications</h2>
-          <span id="resultsCount">0 results</span>
+    <section class="panel controls-panel">
+      <div class="controls-grid">
+        <div class="field">
+          <label for="searchInput">Search</label>
+          <input id="searchInput" type="text" placeholder="Company, role, source, next action" />
         </div>
-        <div id="applicationsList" class="applications-list"></div>
-      </section>
+        <div class="field">
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter"></select>
+        </div>
+        <div class="field">
+          <label for="priorityFilter">Priority</label>
+          <select id="priorityFilter">
+            <option value="All">All priorities</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sortBy">Sort</label>
+          <select id="sortBy">
+            <option value="urgency">Urgency</option>
+            <option value="updated">Recently updated</option>
+            <option value="applied">Applied date</option>
+            <option value="company">Company A–Z</option>
+          </select>
+        </div>
+      </div>
     </section>
+
+    <section class="pipeline-summary panel">
+      <div class="pipeline-header">
+        <h2>Pipeline overview</h2>
+        <div class="results-meta"><span id="resultsCount">0 results</span></div>
+      </div>
+      <div id="pipelineChips" class="pipeline-chips"></div>
+    </section>
+
+    <section id="emptyState" class="panel empty-state hidden">
+      <h2>No applications yet</h2>
+      <p>Add your first application to start tracking the pipeline, next actions, and follow-up dates.</p>
+    </section>
+
+    <section id="cardsContainer" class="cards-grid"></section>
+  </div>
+
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="eyebrow">Application details</div>
+          <h2 id="modalTitle">New Application</h2>
+        </div>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close">×</button>
+      </div>
+
+      <form id="applicationForm">
+        <input type="hidden" id="recordId" />
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="company">Company</label>
+            <input id="company" required />
+          </div>
+          <div class="field">
+            <label for="role">Role</label>
+            <input id="role" required />
+          </div>
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status" required></select>
+          </div>
+          <div class="field">
+            <label for="priority">Priority</label>
+            <select id="priority">
+              <option value="High">High</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="workType">Work type</label>
+            <select id="workType">
+              <option value="">Select</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Onsite">Onsite</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="source">Source</label>
+            <input id="source" placeholder="LinkedIn, referral, company site" />
+          </div>
+          <div class="field">
+            <label for="salary">Salary</label>
+            <input id="salary" placeholder="$85,000–$95,000" />
+          </div>
+          <div class="field">
+            <label for="jobUrl">Job URL</label>
+            <input id="jobUrl" type="url" placeholder="https://..." />
+          </div>
+          <div class="field">
+            <label for="appliedDate">Applied date</label>
+            <input id="appliedDate" type="date" />
+          </div>
+          <div class="field">
+            <label for="nextActionDate">Next action date</label>
+            <input id="nextActionDate" type="date" />
+          </div>
+          <div class="field">
+            <label for="lastContactDate">Last contact date</label>
+            <input id="lastContactDate" type="date" />
+          </div>
+          <div class="field">
+            <label for="nextAction">Next action</label>
+            <input id="nextAction" placeholder="Send thank-you email, follow up, prep for interview" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="notes">Notes</label>
+          <textarea id="notes" rows="7" placeholder="Interview notes, recruiter details, prep reminders, reasons for fit, questions to ask..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Application</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script src="app.js"></script>
