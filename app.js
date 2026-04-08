@@ -433,7 +433,7 @@ if (searchJobsBtn) {
     const options = {
       method: "GET",
       headers: {
-        "X-RapidAPI-Key": "PASTE_YOUR_NEW_KEY_HERE",
+        "X-RapidAPI-Key": ""380eeec1a1mshf38988dacc01ec8p173921jsna92649f29f",",
         "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
       }
     };
