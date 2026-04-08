@@ -384,6 +384,27 @@ applicationForm.addEventListener("submit", event => {
   render();
 });
 
+ try {
+    const response = await fetch(url, options);
+    const data = await response.json();
+
+    const jobs = data.data || [];
+
+    resultsContainer.innerHTML = jobs.map(job => `
+      <div class="card">
+        <h3>${job.job_title}</h3>
+        <div>${job.employer_name}</div>
+        <div>${job.job_city || ""} ${job.job_country || ""}</div>
+        <a href="${job.job_apply_link}" target="_blank">View Job</a>
+        <button onclick='saveJob(${JSON.stringify(job)})'>Save</button>
+      </div>
+    `).join("");
+
+  } catch (err) {
+    resultsContainer.innerHTML = "Error loading jobs.";
+  }
+});
+
 openModalBtn.addEventListener("click", () => openModal());
 closeModalBtn.addEventListener("click", closeModal);
 cancelBtn.addEventListener("click", closeModal);
